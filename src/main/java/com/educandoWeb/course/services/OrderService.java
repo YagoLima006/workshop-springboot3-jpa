@@ -30,6 +30,5 @@ public class OrderService
 	{
 		Order entity = orderRepository.findById(id).get();
 		return new OrderDTO(entity);
-		
 	}
 }

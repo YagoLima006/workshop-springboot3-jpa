@@ -45,7 +45,6 @@ public class Order implements Serializable
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 	private Payment payment;
 	
-	
 	public Order()
 	{}
 
@@ -107,6 +106,16 @@ public class Order implements Serializable
 	{
 		return items;
 	}
+	
+	public Double getTotal()
+	{
+		Double sum = 0.0;
+		for(OrderItem x : items)
+		{
+			sum += x.getSubTotal();
+		}
+		return sum;
+	}
 
 	@Override
 	public int hashCode() {
@@ -124,5 +133,4 @@ public class Order implements Serializable
 		Order other = (Order) obj;
 		return Objects.equals(id, other.id);
 	}
-	
 }

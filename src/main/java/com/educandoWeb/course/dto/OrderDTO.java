@@ -2,10 +2,11 @@ package com.educandoWeb.course.dto;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.educandoWeb.course.entities.Order;
+import com.educandoWeb.course.entities.OrderItem;
 import com.educandoWeb.course.entities.enums.OrderStatus;
 
 public class OrderDTO implements Serializable 
@@ -16,16 +17,27 @@ public class OrderDTO implements Serializable
     private Instant moment;
     private OrderStatus orderStatus;
     private UserDTO client;
-    private Set<OrderItemDTO> items;
+    private Set<OrderItemDTO> items = new HashSet<>();
+    
+    private PaymentDTO payment;
 
-
-    public OrderDTO(Order entity) {
-        this.id = entity.getId();
-        this.moment = entity.getMoment();
-        this.orderStatus = entity.getOrderStatus();
-        this.client = new UserDTO(entity.getClient());
-        this.items = entity.getItems().stream().map(items -> new OrderItemDTO(items)).collect(Collectors.toSet());
-    }
+    public OrderDTO(Long id, Instant moment, OrderStatus orderStatus)
+    {
+		this.id = id;
+		this.moment = moment;
+		this.orderStatus = orderStatus;
+	}
+	
+	public OrderDTO(Order entity) 
+	{
+		this.id = entity.getId();
+		this.moment = entity.getMoment();
+		this.orderStatus = entity.getOrderStatus();
+		for (OrderItem x : entity.getItems()) {
+			items.add(new OrderItemDTO(x));
+		}
+		this.payment = new PaymentDTO(entity.getPayment());
+	}
     
     public OrderDTO() 
     {}
@@ -72,6 +84,21 @@ public class OrderDTO implements Serializable
 		this.items = items;
 	}
 	
-	
-    
+	public PaymentDTO getPayment() {
+		return payment;
+	}
+
+	public void setPayment(PaymentDTO payment) {
+		this.payment = payment;
+	}
+
+	public Double getTotal()
+	{
+		double sum = 0.0;
+		for(OrderItemDTO x : items)
+		{
+			sum += x.getSubTotal();
+		}
+		return sum;
+	}    
 }
